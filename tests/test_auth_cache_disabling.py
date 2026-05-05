@@ -65,14 +65,14 @@ class TestAuthCacheDisabling(unittest.TestCase):
         # --- Assert ---
         # 1. Ensure it still made a request (meaning it didn't use the cache)
         mock_requests.post.assert_called_once()
-        
+
         # 2. Ensure it didn't call get_value on cache (though my implementation skips it)
         # Actually, if it skips it, get_value won't be called.
         auth.frappe.cache().get_value.assert_not_called()
 
         # 3. Ensure it didn't try to SAVE to cache
         auth.frappe.cache().set_value.assert_not_called()
-        
+
         auth.frappe.set_user.assert_called_once_with(self.test_user_email)
 
     @patch("castlecraft.auth.requests")
@@ -108,7 +108,7 @@ class TestAuthCacheDisabling(unittest.TestCase):
             "aud": "test-audience",
             "email": self.test_user_email,
         }
-        
+
         # Even if there is a cached payload, it should be ignored
         auth.frappe.cache().get_value.return_value = json.dumps(jwt_payload)
 
@@ -126,11 +126,11 @@ class TestAuthCacheDisabling(unittest.TestCase):
         # --- Assert ---
         # 1. Ensure it still decoded the JWT (meaning it didn't use the cache)
         mock_jwt.decode.assert_called_once()
-        
+
         # 2. Ensure it didn't call get_value on cache
         auth.frappe.cache().get_value.assert_not_called()
 
         # 3. Ensure it didn't try to SAVE to cache
         auth.frappe.cache().set_value.assert_not_called()
-        
+
         auth.frappe.set_user.assert_called_once_with(self.test_user_email)
