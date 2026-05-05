@@ -6,6 +6,7 @@ from unittest.mock import MagicMock, patch
 from castlecraft import auth
 from tests.conftest import MockDoc
 
+
 class TestAuthCacheDisabling(unittest.TestCase):
     def setUp(self):
         self.test_user_email = "test@example.com"
@@ -42,11 +43,15 @@ class TestAuthCacheDisabling(unittest.TestCase):
         auth.frappe.db.exists.return_value = True
 
         # Even if there is a cached token, it should be ignored
-        auth.frappe.cache().get_value.return_value = json.dumps({
-            "active": True,
-            "email": self.test_user_email,
-            "exp": (datetime.datetime.now() + datetime.timedelta(hours=1)).timestamp(),
-        })
+        auth.frappe.cache().get_value.return_value = json.dumps(
+            {
+                "active": True,
+                "email": self.test_user_email,
+                "exp": (
+                    datetime.datetime.now() + datetime.timedelta(hours=1)
+                ).timestamp(),
+            }
+        )
 
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -79,7 +84,9 @@ class TestAuthCacheDisabling(unittest.TestCase):
     @patch("castlecraft.auth.frappe.get_value")
     @patch("castlecraft.auth.jwt")
     @patch("castlecraft.auth.get_idp")
-    def test_jwt_cache_disabled(self, mock_get_idp, mock_jwt, mock_get_value, mock_requests):
+    def test_jwt_cache_disabled(
+        self, mock_get_idp, mock_jwt, mock_get_value, mock_requests
+    ):
         """
         Verify that JWT verification bypasses cache and doesn't store in cache
         when is_cache_disabled is set.
